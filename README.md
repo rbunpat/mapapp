@@ -1,6 +1,7 @@
 
 # MapApp
 Arduino/ESP32 GPS Tracking Map built with Node.js, Express.js, some code from StackOverflow and of course, Ultimate Jank™
+It just writes to a file when a post request is recieved. No validation whatsoever.
 ## Installation and Running
 
 ```bash
