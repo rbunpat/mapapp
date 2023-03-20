@@ -1,19 +1,15 @@
 
 # MapApp
 Arduino/ESP32 GPS Tracking Map built with Node.js, Express.js, some code from StackOverflow and of course, Ultimate Jank™
-It just writes to a file when a post request is recieved. No validation whatsoever.
-## Installation and Running
+## Running
+Just download the file from release, extract it and run it
 
-```bash
-  npm install
-  npm start
-```
 ## "API" Reference
 
 #### Get the latest coordinates
 
 ```
-  GET /getPos
+  GET /data
 ```
 
 #### Save Coordinates
@@ -26,12 +22,18 @@ Just send it as plain text
 ##### Body
 
 ```
-(newline because i'm too lazy to make auto new line and this is very jank)
-lat, lon
+{
+    "latitude": 69,
+    "longitude": -420
+}
+
 ```
 ##### Example
 
 ```
+{
+    "latitude": 69,
+    "longitude": -420
+}
 
-37.621263, -122.378787
 ```
