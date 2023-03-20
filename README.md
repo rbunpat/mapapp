@@ -9,14 +9,15 @@ Just download the file from release, extract it and run it
 #### Get the latest coordinates
 
 ```
-  GET /data
+  GET /data/plain
+  GET /data/json
 ```
 
 #### Save Coordinates
 Just send it as plain text
 
 ```
-  POST /savePos
+  POST /data/save
 ```
 
 ##### Body
