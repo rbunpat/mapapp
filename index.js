@@ -23,6 +23,13 @@ db.run(`CREATE TABLE IF NOT EXISTS positions (
 
 app.use(bodyParser.json());
 
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 app.get("/", function (req, res) {
   res.send(
     "Tracker API Server, For documentation see " + githubLink
@@ -57,39 +64,59 @@ app.post("/data/save", function (req, res) {
 });
 
 app.get("/data/json", function (req, res) {
-  const query = `SELECT latitude, longitude FROM positions ORDER BY created_at DESC LIMIT 1`;
+  const limit = parseInt(req.query.limit) || 1;
+  const query = `SELECT latitude, longitude FROM positions ORDER BY created_at DESC LIMIT ${limit}`;
 
-  db.get(query, function (err, row) {
+  db.all(query, function (err, rows) {
     if (err) {
       return res.status(500).send(`{
         "status": "400 Bad Request"
     }`);
     }
-    if (!row) {
+    if (!rows.length) {
       return res.status(404).send(`{
         "status": "No Positions in Database"
     }`);
     }
-    res.send(`{
-      "latitude": "${row.latitude}",
-      "longitude": "${row.longitude}"
-  }`);
+    const positions = rows.map(row => ({latitude: row.latitude, longitude: row.longitude}));
+    res.send(JSON.stringify(positions));
   });
 });
 
 app.get("/data/plain", function (req, res) {
-  const query = `SELECT latitude, longitude FROM positions ORDER BY created_at DESC LIMIT 1`;
+  const limit = parseInt(req.query.limit) || 1;
+  const query = `SELECT latitude, longitude FROM positions ORDER BY created_at DESC LIMIT ${limit}`;
 
-  db.get(query, function (err, row) {
+  db.all(query, function (err, rows) {
     if (err) {
       return res.status(500).send("400 Bad Request, See " + githubLink);
     }
-    if (!row) {
+    if (!rows.length) {
       return res.status(404).send("No positions found.");
     }
-    res.send(`${row.latitude}, ${row.longitude}`);
+    const coordinates = rows.map(row => `${row.latitude}, ${row.longitude}`).join("\n");
+    res.send(coordinates);
   });
 });
+
+app.get("/data/array", function (req, res) {
+  const limit = parseInt(req.query.limit) || 1;
+  const query = `SELECT latitude, longitude FROM positions ORDER BY created_at DESC LIMIT ${limit}`;
+
+  db.all(query, function (err, rows) {
+    if (err) {
+      return res.status(500).send("400 Bad Request, See " + githubLink);
+    }
+    if (!rows.length) {
+      return res.status(404).send("No positions found.");
+    }
+    const positions = rows.map(row => `${row.latitude}, ${row.longitude}`);
+    res.send(positions);
+  });
+});
+
+
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
